@@ -1,4 +1,7 @@
 We have launched our website and database in online servers, you can access it via http://psychecraft.com.
+It is a accommodation website for rent and lease a Lodging, some of the data is from airbnb, http://insideairbnb.com/get-the-data.html.
+
+This website can do the account creation, account login,logout,Lodging booking and Lodging posting, recommendation and so on. 
 
 You can also run and configure it on the localhost, in that case you need to configure your environment and dependencies.
 You can use the following commands to install all modules:
