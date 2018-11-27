@@ -1,0 +1,41 @@
+.star {
+    width: 32px;
+    height: 32px;
+    transition: .6s all;
+  }
+  #rating {
+    cursor: pointer;
+    display: inline-block
+  }
+  #review-form .input-group-addon {
+    min-width: 100px;
+  }
+  #review-form .btn {
+    min-width: 100px;
+  }
+  #review-form input[type="text"],
+  #review-form textarea {
+    width: 100%;
+  }
+  #review-form .form-group {
+    margin-bottom: 15px;
+  }
+  #review-form .help-block {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  blockquote {
+    border-left: 5px solid rgb(238, 238, 238);
+    padding-left: 20px;
+  }
+
+  blockquote .footer{
+    display: block;
+    font-size: 80%;
+  }
+
+  .stars-container {
+    margin-bottom: 5px;
+  }

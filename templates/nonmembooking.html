@@ -1,0 +1,211 @@
+{% include "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css?family=Spinnaker" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker.min.css' %}" />
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<div style="text-align:center"> <h2>Confirm your booking </h2></div>
+<body style="background-image: url({% static 'pink.png' %});">
+
+
+
+
+<div style="background: rgba(189,244,39,0.3);width:1400px;height:440px;border-radius:20px;box-shadow: 5px 5px 5px #888888;position: relative;top:30px">
+    <div ><img src="{{ picture }}" style="width: 150px;height:150px;position:relative;top:10px;left:10px"></div>
+
+    <form action="/nonmembooking/{{listing_id}}/" method="post">
+    <div style="width:1200px">
+    <p style="font-family: 'Spinnaker', sans-serif;position: relative;font-size:150%;left:200px;top:-145px"> {{name}}</p>
+    <div style="position:relative;left:200px;top:-120px">
+    <p> Date: </p>
+
+    <input type="text" class="form-control" id="check-in" name="check-in" placeholder="dd-mm-yyyy" value="{{pre_cin}}" readonly
+    style="background-color: white;width:150px;position:relative;left:45px;top:-35px">
+    <p style="position:relative;left:213px;top:-62px;width:400px"> to </p>
+    <input type="text" class="form-control" id="check-out" name="check-out" placeholder="dd-mm-yyyy" value="{{pre_cout}}" readonly
+    style="background-color: white;width:150px;position:relative;top:-99px;left:240px">
+
+    <div class="row" style="position: relative;top:-60px;left:15px">
+      <p> Number of guests:  </p>
+     <div class="col-lg-2" style="position:relative;top:-5px;left:51px">
+       <div class="input-group">
+         <span class="input-group-btn">
+           <button class="btn btn-default minus" onclick="minus();" type="button">-</button>
+         </span>
+         <input type="text" class="form-control numofguest" name="numofguest" value="{{pre_guests}}" readonly style="text-align:center;background-color: white">
+         <span class="input-group-btn">
+           <button class="btn btn-default plus" onclick="add();" type="button">+</button>
+         </span>
+       </div>
+     </div>
+    </div>
+    </div>
+  </div>
+
+  <div style="float:left;position:relative;top:-140px;margin:10px">
+    <p style="font-size:130%"> Name: <input type="text" class="form-control v_name" name="v_name" style="width:300px" value="" ></p>
+    <p style="font-size:130%"> Phone Number: <input type="text" class="form-control v_phone" name="v_phone" style="width:300px" value="" ></p>
+    <p style="font-size:130%"> Email(*): <input type="text" class="form-control v_email" name="v_email" style="width:300px" value="" ></p>
+  </div>
+
+
+
+
+
+    <div align="right" style="position:relative;top:-130px"><p>---------------------------------------------------------------------------</p></div>
+
+ <div style="float:right;" >
+   <div style="position: relative;top:-120px;">
+   <p class="night" style="font-family: 'Spinnaker', sans-serif;font-size:120%;"> ${{price}}&times{{pre_dd}} Night:
+     <span style="float:right"> ${{pre_price}}.00</span></p>
+   <p style="font-family: 'Spinnaker', sans-serif;font-size:120%;"> Cleaning fee: <span style="float:right">
+     {% if clean_fee %}
+      ${{clean_fee}}
+     {%else%}
+     $0.00
+     {%endif%}
+   </span></p>
+  </div>
+   <p style="font-family: 'Spinnaker', sans-serif;position: relative;font-size:200%;top:-110px"> Total price:
+   <span class="totprice"> ${{total_price}}.00 </span></p>
+   {% if non_flag == 1 %}
+   <button class="btn btn-success confirm" type="submit" disabled="disabled" style="float:right;position:relative;top:-110px;right:30px" onclick="myFunction()">Confirm booking</button>
+   {%else%}
+   <button class="btn btn-success confirm" type="submit" style="float:right;position:relative;top:-110px;right:30px" onclick="myFunction()">Confirm booking</button>
+   {%endif%}
+
+ </div>
+</form>
+
+</div>
+
+<p style="font-size:180%;position:relative;left:250px;top:-100px"> {{err}} </p>
+
+
+<script>
+
+
+    var plus = $('.plus');
+    var numofguest = $('.numofguest');
+    function add() {
+            numofguest.val(parseInt(numofguest.val())+1);
+    }
+    function minus() {
+            numofguest.val(parseInt(numofguest.val())-1);
+            if(numofguest.val() <= 1) {
+                numofguest.val(1);
+            }
+
+    }
+
+
+    function stringToDate(dateStr){
+    var newDateStr = dateStr.substr(6,4)+"-"+dateStr.substr(3,2)+"-"+dateStr.substr(0,2);
+    var date = new Date(newDateStr);
+    if (isNaN(newDateStr)){
+        var arys= newDateStr.split('-');
+        date = new Date(arys[0], arys[1] - 1, arys[2]);
+    }
+    return date;
+    }
+
+    function myFunction()
+    {
+      alert("Booking processing. Please check your email.");
+    }
+
+
+
+
+    $(function () {
+
+        var picker1 = $('#check-in').datepicker({format: 'dd-mm-yyyy',autoclose: true,todayHighlight:true,startDate: '0d',clearBtn: true});
+        var picker2 = $("#check-out").datepicker({format: 'dd-mm-yyyy',autoclose: true,todayHighlight:true,startDate: '0d',clearBtn: true});
+
+        var in_val = $('#check-in').val();
+        var out_val = $('#check-out').val();
+        var day = 0;
+
+        picker1.on('changeDate', function (e) {
+            picker2.datepicker('setStartDate', e.date);
+            in_val = $('#check-in').val();
+
+            if (out_val!=""&&in_val!=""){
+              var sdate = stringToDate(in_val);
+              var edate = stringToDate(out_val);
+              day = parseInt((Date.parse(edate) - Date.parse(sdate))/86400000);
+              if (day<1){
+                  day = 1;
+              }
+              $('.night').html( "${{price}}&times" + day + " Nights:" + "<span style='float:right'>$" + {{price}}*day + ".00</span>");
+              {% if clean_fee %}
+                var curr = {{price}}*day+{{clean_fee}};
+                $('.totprice').text("$"+curr+".00");
+              {%else%}
+                $('.totprice').text("$"+{{price}}*day+".00");
+              {%endif%}
+              $('.confirm').attr("disabled",false);
+            }
+            else {
+              $('.night').html( "${{price}}&times0 Night: <span style='float:right'>$0.00</span>");
+              $('.totprice').text("$0.00");
+              $('.confirm').attr("disabled",true);
+            }
+        });
+
+        picker1.on('clearDate', function (e) {
+            picker2.datepicker('setStartDate', '0d');
+            in_val="";
+            $('.night').html( "${{price}}&times0 Night: <span style='float:right'>$0.00</span>");
+            $('.totprice').text("$0.00");
+            $('.confirm').attr("disabled",true);
+        });
+
+        picker2.on('changeDate', function (e) {
+            picker1.datepicker('setEndDate', e.date);
+            out_val = $('#check-out').val();
+
+            if (in_val!=""&&out_val!=""){
+                var sdate = stringToDate(in_val);
+                var edate = stringToDate(out_val);
+                day = parseInt((Date.parse(edate) - Date.parse(sdate))/86400000);
+                if (day<1){
+                    day = 1;
+                }
+                $('.night').html( "${{price}}&times" + day + " Nights:" + "<span style='float:right'>$" + {{price}}*day + ".00</span>");
+                {% if clean_fee %}
+                  var curr = {{price}}*day+{{clean_fee}};
+                  $('.totprice').text("$"+curr+".00");
+                {%else%}
+                  $('.totprice').text("$"+{{price}}*day+".00");
+                {%endif%}
+                $('.confirm').attr("disabled",false);
+                }
+            else{
+              $('.night').html( "${{price}}&times0 Night: <span style='float:right'>$0.00</span>");
+              $('.totprice').text("$0.00");
+              $('.confirm').attr("disabled",true);
+            }
+
+        });
+
+        picker2.on('clearDate', function (e) {
+            picker1.datepicker('setEndDate', null);
+            out_val = "";
+            $('.night').html( "${{price}}&times0 Night: <span style='float:right'>$0.00</span>");
+            $('.totprice').text("$0.00");
+            $('.confirm').attr("disabled",true);
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+{% endblock %}

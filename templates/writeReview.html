@@ -1,0 +1,34 @@
+{% include "base_afterLogin.html" %}
+{% load static %}
+
+{% block content %}
+<link href="{% static 'css/writeReview.css' %}" rel="stylesheet">
+<div class="container">
+<p>
+  We strive to provide the best possible service for our clients. Please leave a review to let us know how we are doing and to share your experience with others.
+</p>
+<form id="review-form" action="/submitReview/" method="post">
+  <h2>Write Your Review</h2>
+  <div class="form-group">
+    <label class="control-label" for="review">Your Review:</label>
+    <textarea class="form-control" rows="10" placeholder="Your Reivew" name="review" id="review"></textarea>
+    <span id="reviewInfo" class="help-block pull-right">
+      <span id="remaining">999</span> Characters remaining
+    </span>
+  </div>
+  <button id="submit" class="btn btn-primary">Submit</button>
+    <input type="hidden" name="listing_id" value={{listing_id}}>
+  <span id="submitInfo" class="help-block">
+    By clicking <strong>Submit</strong>, I authorize the sharing of my name and review on the web.
+  </span>
+</form>
+</div>
+    <script>
+    var maxLength = 999;
+    $('textarea').keyup(function() {
+        var length = $(this).val().length;
+        var length = maxLength-length;
+        $('#remaining').text(length);
+});
+    </script>
+{% endblock %}

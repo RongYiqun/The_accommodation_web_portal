@@ -1,0 +1,53 @@
+{% include "base_afterLogin.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css?family=Spinnaker" rel="stylesheet">
+<body style="background-image: url({% static 'pink.png' %});">
+
+
+
+{% for each in results %}
+<div style="background: rgba(52,81,163,0.3);width:1400px;height:160px;border-radius:20px;margin:10px 10px 10px 20px;">
+  <div ><img src="{{ each.picture }}" style="width: 140px;height:140px;position:relative;top:10px;left:10px"></div>
+  <a href="/singleProperty/{{each.listing_id}}" style="font-family: 'Spinnaker', sans-serif;width: 1000px;position: relative;font-size:160%;left:170px;top:-135px;"> {{each.name}}</a>
+  <p style="font-family: 'Spinnaker', sans-serif;width: 1000px;position: relative;font-size:130%;left:170px;top:-130px;"> Check in: {{each.start_date}} </p>
+  <p style="font-family: 'Spinnaker', sans-serif;width: 1000px;position: relative;font-size:130%;left:170px;top:-130px;"> Check out: {{each.end_date}} </p>
+  <p style="font-family: 'Spinnaker', sans-serif;width: 1000px;position: relative;font-size:130%;left:170px;top:-130px;"> Total price: ${{each.total_price}} </p>
+  <form id="del_id_{{each.booking_id}}" action="{% url 'bookinghistory' %}" method="post">
+    <button class="btn btn-warning btn-lg confirm" type="submit" onclick="show_confirm({{each.booking_id}})"
+    style="float:right;position: relative;top:-255px;margin:0px 50px 10px 10px">Cancel this booking</button>
+    <input type="hidden" name="ifRemove_{{each.booking_id}}" id="ifRemove_{{each.booking_id}}" value=0>
+    <input type="hidden" name="bookingID" value={{each.booking_id}}>
+  </form>
+    <form action="/writeReview/" method="post">
+        <input type="hidden" name="listing_id" value={{each.listing_id}}>
+        <button class="btn btn-warning btn-lg confirm" type="submit" style="float:right;position: relative;top:-185px;right:-200px;margin:0px 50px 10px 10px">Write review</button>
+    </form>
+
+</div>
+{% endfor %}
+
+
+
+
+<script type="text/javascript">
+function show_confirm(id)
+{
+var r=confirm("Please confirm your cancellation!");
+if (r==true)
+  {
+  alert("Your booking has been cancelled!");
+  document.getElementById("ifRemove_"+id).value = 1;
+  document.getElementById("del_id_"+id).submit();
+  }
+else
+  {
+  alert("You pressed Cancel!");
+  }
+}
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% block content %}
+    {% load static %}
+    <body style="background-image: url({% static 'blue.png' %});">
+        <br>
+        <br>
+        <div class="grid-container">
+            {% for ele in photoList %}
+                <div style="display: inline-grid;">
+                    <form id="formout_{{ forloop.counter }}" action="{% url 'listingScenesSetor' %}" method="post">
+                        <div>
+                            <div>
+                                <input type="hidden" name="imgID" value={{ ele.0}}>
+                                <input type="hidden" name="ifRemove" value=0 id="ifRemove_{{ forloop.counter }}" >
+                                <img class="img-fluid" src="{% static ele.1 %}"  id="img_{{ forloop.counter }}" height="300" width="300">
+                            </div>
+                            <div>
+                                <button  class="btn btn-warning" onclick="remove({{ forloop.counter }})">Remove</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="container">
+            {% load crispy_forms_tags %}
+            {% crispy FileFieldForm %}
+        </div>
+        <div style="text-align: center;">
+            <form id="finalized" action="{% url 'listingFinalize' %}" method="post"></form>
+            <button onclick="jump()" class="btn btn-success">Finished Posting lodging</button>
+        </div>
+    </body>
+    <script type="text/javascript">
+        function remove(counter) {
+            var result=confirm("This operation is not reversible, are you sure to proceed?");
+            if(result){
+                 document.getElementById("ifRemove_"+counter).value = 1;
+                 document.getElementById("formout_"+counter).submit();
+            }
+        }
+
+        function jump(){
+           document.getElementById("finalized").submit();
+        }
+    </script>
+{% endblock %}
+{% else %}
+<h>please login before further operations</h>
+{% endif%}

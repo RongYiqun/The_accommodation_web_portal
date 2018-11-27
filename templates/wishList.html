@@ -1,0 +1,94 @@
+{% include "base_afterLogin.html" %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+{% load static %}
+	<link rel="stylesheet" href="{% static 'css/reset.css' %}"> <!-- CSS reset -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Resource style -->
+	<script src="{% static 'js/modernizr.js' %}"></script> <!-- Modernizr -->
+
+<body>
+	<section class="cd-intro">
+		<h1>Wish List</h1>
+	</section> <!-- .cd-intro -->
+
+	<section class="cd-products-comparison-table">
+		<header>
+			<h2>Compare Listings</h2>
+
+			<div class="actions">
+				<a href="#0" class="reset">Reset</a>
+				<a href="#0" class="filter">Filter</a>
+			</div>
+		</header>
+
+		<div class="cd-products-table">
+			<div class="features">
+				<div class="top-info">Listings</div>
+				<ul class="cd-features-list">
+					<li>Price</li>
+					<li>Rating</li>
+                    <li>Room type</li>
+					<li>Accommodates</li>
+					<li>Bedroom</li>
+					<li>Bathroom</li>
+					<li>Number of amenities</li>
+					<li>Cleaning fee</li>
+				</ul>
+			</div> <!-- .features -->
+			
+			<div class="cd-products-wrapper">
+				<ul class="cd-products-columns">
+                    {% for x in results %}
+					<li class="product">
+						<div class="top-info">
+							<div class="check"></div>
+							<img src="{{ x.picture }}" alt="product image">
+                            <h3><a href="{% url 'singleProperty' x.id %}">{{ x.name }}</a></h3>
+						</div> <!-- .top-info -->
+
+						<ul class="cd-features-list">
+							<li>${{ x.price }}</li>
+{#							<li class="rate"><span>{{ x.rating }}/5</span></li>#}
+                            <li>{{ x.rating }}</li>
+                            <li>{{ x.room_type }}</li>
+							<li>{{ x.accommodates }}</li>
+							<li>{{ x.bedroom }}</li>
+							<li>{{ x.bathroom }}</li>
+							<li>{{ x.number_of_amenities }}</li>
+                            {% if x.clean_fee != None %}
+                                <li>${{ x.clean_fee }}</li>
+                            {% else %}
+                                <li>${{ 0 }}</li>
+                            {% endif %}
+{#                            <form action="/deleteInWishList/" method="post">#}
+{#                                <input type="hidden" id="listingid" value="{{ x.id }}">#}
+                            <button type="submit" onclick="ajaxsubmit()" class="btn btn-default btn-lg text-center btn-3d">Delete</button>
+{#                            </form>#}
+                            <script>
+                                function ajaxsubmit() {
+                                    $.ajax({
+                                            url: /deleteInWishList/,
+                                            type: 'POST',
+                                            data: {listingid:{{ x.id }} },
+                                            success: function (arg) {window.location.reload();}
+                                                }
+                                            );
+                                        }
+                            </script>
+                        </ul>
+					</li> <!-- .product -->
+
+					{% endfor %}
+				</ul> <!-- .cd-products-columns -->
+			</div> <!-- .cd-products-wrapper -->
+			
+{#			<ul class="cd-table-navigation">#}
+{#				<li><a href="#0" class="prev inactive">Prev</a></li>#}
+{#				<li><a href="#0" class="next">Next</a></li>#}
+{#			</ul>#}
+		</div> <!-- .cd-products-table -->
+	</section> <!-- .cd-products-comparison-table -->
+<script src="{% static 'js/jquery-2.1.4.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script> <!-- Resource jQuery -->
+</body>

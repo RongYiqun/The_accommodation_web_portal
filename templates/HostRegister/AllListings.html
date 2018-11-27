@@ -1,0 +1,48 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% block content %}
+    {% load static %}
+    <body style="background-image: url({% static 'pink.png' %});">
+        <div class="container">
+            <table class="table">
+            <tr>
+                 <td>lodging name</td>
+                 <td>lodging locations</td>
+                 <td>Click to revise</td>
+                 <td>Click to remove</td>
+            </tr>
+                {% for ele in listings %}
+                    <form id="formout_{{ forloop.counter }}" action="{% url 'hostListingManager' %}" method="post">
+                            <tr>
+                                <td><label ><a href="{% url 'singleProperty' ele.2%}">{{ ele.0}}</a> </label></td>
+                                <td><label > {{ ele.1}}</label></td>
+                                <input type="hidden" name="listingID" value={{ ele.2}}>
+                                <input type="hidden" name="ifRemove" value=0 id="ifRemove_{{ forloop.counter }}" >
+                                <td><input type="submit" value="Revise"></td>
+                                <td><button onclick="remove({{ forloop.counter }})">Remove</button></td>
+                            </tr>
+                    </form>
+                {% endfor %}
+            </table>
+
+            <form action="{% url 'hostListingManager' %}" method="post" >
+                    <input type="hidden" name="listingID" value=-1>
+                    <input type="hidden" name="ifRemove" id="ifRemove" value=0>
+                    <input type="submit" value="Add a new listing">
+            </form>
+
+        </div> <!-- /container -->
+        <script type="text/javascript">
+            function remove(counter) {
+                var result=confirm("This operation is not reversible, are you sure to proceed?");
+                if(result){
+                     document.getElementById("ifRemove_"+counter).value = 1;
+                     document.getElementById("formout_"+counter).submit();
+                }
+            }
+        </script>
+    </body>
+{% endblock %}
+{% else %}
+<p>please login before further operations</p>
+{% endif%}

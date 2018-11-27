@@ -1,0 +1,141 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% else %}
+{% include "base.html" %}
+{% endif%}
+{% load static %}
+{% block title %}{% endblock %}
+
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/rec.css' %}" />
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<link href="https://fonts.googleapis.com/css?family=Maven+Pro" rel="stylesheet">
+
+{#<body style="background-image: url({% static 'background.jpg' %});background-size:100% 150%;" >#}
+<div style="background-image: url({% static 'background.jpg' %});background-size:100% 120%;height: 700px;" >
+<form action="/search/" method="post">
+<div class="bg-info" style="width:480px;height:500px;border-radius:10px;position:relative;left:150px;top:40px">
+
+  <p style="font-size:200%;font-weight:bold;position:relative;left:35px;top:30px">Luxurious Aussie homes and experiences.</p>
+  <div class="form-group" style="width:405px;position:relative;left:35px;top:50px">
+      <label for="where" style="font-family:courier;font-size:120%;">WHERE</label>
+      <input type="text" class="form-control input-lg" id="where" name="where" placeholder="Anywhere" >
+  </div>
+
+  <div class="form-group" style="position:relative;top:50px;width:200px;left:35px;">
+    <label for="check-in" style="font-family:courier;font-size:120%;">CHECK IN</label>
+    <input type="text" class="form-control input-lg" id="check-in" name="check-in" placeholder="dd-mm-yyyy" value="" readonly style="background-color: white">
+  </div>
+
+  <div class="form-group" style="width:200px;position:relative;top:-39px;left:240px">
+    <label for="check-out" style="font-family:courier;font-size:120%;">CHECK OUT</label>
+    <input type="text" class="form-control input-lg" id="check-out" name="check-out" placeholder="dd-mm-yyyy" value="" readonly style="background-color: white">
+  </div>
+
+
+  <div class="form-group" style="width:405px;position:relative;top:-39px;left:35px;">
+    <label for="guests" style="font-family:courier;font-size:120%;">GUESTS</label>
+      <div>
+			<input type="text" class="form-control input-lg" id="guests" name="guests" placeholder="1 guest" value="" style="width:357px;background-color: white;" readonly>
+      <button class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" style="position:relative;float:right;top:-46px"><span class="caret"></span></button>
+      <ul class="dropdown-menu" id="numguests" style="width:357px;">
+				<li><a >1 guest</a></li>
+				<li><a >2 guests</a></li>
+				<li><a >3 guests</a></li>
+				<li><a >4 guests</a></li>
+        <li><a >5+ guests</a></li>
+			</ul>
+		</div>
+  </div>
+
+
+  <div style="float:left;position:relative;left:100px;top:-9px;font-family: 'Maven Pro', sans-serif;font-size:120%"><p>{{ err_message }}</p></div>
+
+    {% if recommendation %}
+        <input type="hidden" id="recommendation" value="{{ recommendation }}">
+    {% endif %}
+
+   <!-- <div class="search_button" style="position:relative; left:350px;top:-18px"> -->
+   <div class="search_button" style="float:right;position:relative;top:-18px;left:78px">
+      <button class="btn btn-danger btn-lg" type="submit">Search</button>
+   </div>
+    <div>
+
+    </div>
+</div>
+</form>
+</div>
+<div>
+    <h1><br></h1>
+</div>
+<div class="gallery-places" style="margin:auto; width: 1000px; height: 600px">
+    <p id="just_for_the_weekend_text">Most Popular</p>
+    <ul class="places">
+        <li class="img-large">
+            <a class="clearfix zoom" href="{% url 'singleProperty' most_popular.id%}"><img data-action="zoom" src="{{ most_popular.picture }}" alt="Property Image"></a>
+            <h4 class="place-names">{{ most_popular.name }}</h4>
+        </li>
+        {% for x in results %}
+            <li class="img-short">
+                <a class="clearfix zoom" href="{% url 'singleProperty' x.id%}"><img data-action="zoom" src="{{ x.picture }}" alt="Property Image"></a>
+                <h6 style="margin: -30px 0 0 20px;color: #fff;font-size: 12px;">{{ x.name }}</h6>
+			</li>
+        {% endfor %}
+    </ul>
+</div>
+
+    {% if recommendation %}
+    <div class="gallery-places" style="margin:auto; width: 1000px; height: 300px">
+        <p id="just_for_the_weekend_text">Recommendation</p>
+        <ul class="places">
+        {% for x in recommendation %}
+            <li class="img-short">
+                <a class="clearfix zoom" href="{% url 'singleProperty' x.id%}"><img data-action="zoom" src="{{ x.picture }}" alt="Property Image"></a>
+                <h6 style="margin: -30px 0 0 20px;color: #fff;font-size: 12px;">{{ x.name }}</h6>
+			</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+
+
+<script>
+
+    $('#numguests').on('click', function(e) {
+    var $target = $(e.target);
+    $('#guests').val($target.text());
+    })
+
+
+    $(function () {
+
+        var picker1 = $('#check-in').datepicker({format: 'dd-mm-yyyy',autoclose: true,todayHighlight:true,startDate: '0d',clearBtn: true});
+        var picker2 = $("#check-out").datepicker({format: 'dd-mm-yyyy',autoclose: true,todayHighlight:true,startDate: '0d',clearBtn: true});
+
+        picker1.on('changeDate', function (e) {
+            picker2.datepicker('setStartDate', e.date);
+        });
+
+        picker1.on('clearDate', function (e) {
+            picker2.datepicker('setStartDate', '0d');
+        });
+
+
+        picker2.on('changeDate', function (e) {
+            picker1.datepicker('setEndDate', e.date);
+        });
+
+        picker2.on('clearDate', function (e) {
+            picker1.datepicker('setEndDate', null);
+        });
+
+
+    });
+
+</script>
+
+{% endblock %}

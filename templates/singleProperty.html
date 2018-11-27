@@ -1,0 +1,337 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% else %}
+{% include "base.html" %}
+{% endif%}
+
+{% load static %}
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Poppins:400,600" rel="stylesheet">
+<link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
+<link href="{% static 'css/slick.css'%}" rel="stylesheet">
+<link href="{% static 'css/slicknav.css' %}" rel="stylesheet">
+<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+<link href="{% static 'css/theme.css' %}" rel="stylesheet">
+<link href="{% static 'css/review.css' %}" rel="stylesheet">
+<link href="{% static 'css/review2.css' %}" rel="stylesheet">
+
+<style>
+    h1 {
+      font-size: 45px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+      margin-bottom: 40px;
+      color: #000;
+      text-shadow: 0 2px 3px #555555;
+      font-family: Tahoma;
+    }
+
+    .container {
+      width: 100%;
+      margin: 0 auto;
+      margin-top: 50px;
+    }
+
+    #map_container {
+      position: relative;
+    }
+
+    #map {
+      height: 0;
+      overflow: hidden;
+      padding-bottom: 22.25%;
+      padding-top: 30px;
+      position: relative;
+    }
+  </style>
+
+
+{% block content %}
+    <body class="">
+    <div id="property-single">
+         <div id="main-slider">
+             <div class="slide"><img src="{{ result.picture }}" style="position: relative; left: 350px; width:50%"></div>
+         </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-7">
+                    <section class="property-meta-wrapper common">
+                        <h3 class="entry-title">{{ result.name }}</h3>
+                        <div class="property-single-meta">
+                            <ul class="clearfix">
+                                <li><span>Accommodates :</span> {{ result.accommodates }}</li>
+                                <li><span>Bedroom :</span> {{ result.bedroom}}</li>
+                                {% if result.bathroom == None %}
+                                    <li><span>Bathroom :</span> 0</li>
+                                {% else %}
+                                    <li><span>Bathroom :</span> {{ result.bathroom}}</li>
+                                {% endif %}
+                                <li><span>Price :</span> ${{ result.price}}</li>
+                                {% if result.clean_fee == None %}
+                                    <li><span>Cleaning fee :</span> $0</li>
+                                {% else %}
+                                    <li><span>Cleaning fee :</span> {{ result.clean_fee}}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </section>
+                    <section class="property-contents common">
+                        <div class="entry-title clearfix">
+                            <h3 class="pull-left">Description </h3><a class="pull-right print-btn" href="javascript:window.print()">Print This Page <i class="fa fa-print"></i></a>
+                        </div>
+                        {% if result.summary == None %}
+                        {% else %}
+                        <h4>Summary</h4><p>{{ result.summary }}</p>
+                        {% endif %}
+                        {% if result.space == None %}
+                        {% else %}
+                        <h4>Space</h4><p>{{ result.space }}</p>
+                        {% endif %}
+                        {% if result.transit == None %}
+                        {% else %}
+                        <h4>Transit</h4><p>{{ result.transit }}</p>
+                        {% endif %}
+                    </section>
+                    <section class="property-single-features common clearfix">
+                        <h3 class="entry-title">Property Features</h3>
+                        <ul class="property-single-features-list clearfix">
+                            {% for x in result.amenities %}
+                                <li>{{ x }}</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    <section class="property-contents common">
+                        <div class="entry-title clearfix">
+                            <h3 class="pull-left">Location </h3>
+                        </div>
+                        <div id="map"></div>
+                    </section>
+                </div>
+                <div class="col-lg-4 col-md-5">
+                    <div id="property-sidebar">
+                        <section class="widget adv-search-widget clearfix">
+                            <h4 class="title hide">Booking</h4>
+                            <div id="advance-search-widget" class="clearfix">
+                                <div id="widget-tabs">
+                                    <ul class="tab-list clearfix">
+                                        <li><a class="btn" href="#tab-1">Booking</a></li>
+                                    </ul>
+                                    <button href="" type="submit" class="btn btn-default btn-lg text-center btn-3d" data-hover="Book" onclick="booksubmit()">Book</button>
+                                    <script>
+                                        function booksubmit() {
+                                            {% if user is not None and user.is_authenticated %}
+                                                {% if request.session.role == 'guest' %}
+                                                window.location.href = "/booking/{{listing_id}}/";
+                                                {% else %}
+                                                    alert("You are a host, please login your vistor account!");
+                                                {% endif %}
+                                            {% else %}
+                                              window.location.href = "/nonmembooking/{{listing_id}}/";
+                                            {% endif %}
+                                        }
+                                    </script>
+                                    <button type="submit" id="add" onclick="ajaxsubmit()" class="btn btn-default btn-lg text-center btn-3d" data-hover="Add to wish list">Add to wish list</button>
+                                    <script>
+                                        function ajaxsubmit() {
+                                            {% if user is not None and user.is_authenticated%}
+                                                {% if request.session.role == 'guest' %}
+                                                $.ajax({
+                                                    url: /addToWishlist/,
+                                                    type: 'POST',
+                                                    data: {listingid:{{ listing_id }} },
+                                                    success: function (arg) {}
+                                                    }
+                                                );
+                                                {% else %}
+                                                    alert("You are a host, please login your vistor account!");
+                                                {% endif %}
+                                            {% else %}
+                                                alert("Please Login First!");
+                                            {% endif %}
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                        </section>
+                         <section class="property-agent common">
+                        <h3 class="entry-title">Host</h3>
+                        <div class="row">
+                            <div class="col-sm-5 col-xs-5">
+                                <a href="#" class="agent-image"><img src="{{ result.host_picture }}" alt="Agent Image"></a>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="agent-box clearfix">
+                                   <div class="row">
+                                        <div class="col-sm-7 col-xs-7">
+                                            <cite class="agent-name">{{ result.host_name }}</cite>
+                                        </div>
+                                       <p>{{ result.host_about }}</p>
+                                       <a href="#" class="btn btn-warning">Contact Host</a>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    </div>
+                </div>
+            <div class="Review">
+                <h3 class="entry-title">Review</h3>
+                <h3 style="display: inline-block;font-size: 54px;line-height: 48px;font-weight: 900;margin: 0;">{{ result.rating }}</h3>
+                {% if result.rating >= 95 %}
+                <div class="Review-rating">
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                </div>
+                {% elif result.rating >= 85 and result.rating < 95%}
+                <div class="Review-rating">
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                </div>
+                {% elif result.rating >= 75 and result.rating < 85%}
+                <div class="Review-rating">
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                </div>
+                {% elif result.rating >= 65 and result.rating < 75%}
+                <div class="Review-rating">
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                </div>
+                {% else %}
+                 <div class="Review-rating">
+                    <span class="Review-star Review-star--active">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                    <span class="Review-star">&#9733;</span>
+                 </div>
+                {% endif %}
+                <h4><br></h4>
+                {% for x in comments %}
+{#                <div class="Review-details">#}
+{#                    <img src="{% static 'img/profile.jpg' %}">#}
+{#                    <div class="Review-meta">#}
+{#                        <p class="Review-author">{{ x.review_name }}</p>#}
+{#                        <p class="Review-date">{{ x.review_data }}</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="Review-body">#}
+{#                    <p>{{ x.comments }}</p>#}
+{#                </div>#}
+                    <div id="testimonial-slider" class="owl-carousel">
+                    <div class="testimonial">
+                        <div class="testimonial-content">
+                            <p>{{ x.comments }}</p>
+                        </div>
+                            <div class="Review-meta">
+                                <p class="Review-author">{{ x.review_name }}</p>
+                                <p class="Review-date">{{ x.review_data }}</p>
+                            </div>
+                        <div class="testimonial-info"></div>
+                        <h5><br></h5>
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+{% endblock %}
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static '/js/jquery.migrate.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.min.js'%}"></script>
+    <script src="{% static 'js/slick.min.js'%}"></script>
+    <script src="{% static 'js/jquery-ui.min.js'%}"></script>
+    <script src="{% static 'js/tweetie.js'%}"></script>
+    <script src="{% static 'js/jquery.form.min.js'%}"></script>
+    <script src="{% static 'js/jquery.validate.min.js'%}"></script>
+    <script src="{% static 'js/modernizr.custom.js'%}"></script>
+    <script src="{% static 'js/wow.min.js'%}"></script>
+    <script src="{% static 'js/zoom.js'%}"></script>
+    <script src="{% static 'js/mixitup.min.js'%}"></script>
+<script src="{% static 'js/angular.min.js'%}"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1Gtog4Cv8OUO6FuheLR_94UkhekmPZuI&callback=initMap"
+  type="text/javascript"></script>
+
+<script>
+        var latitude={{ result.latitude }}
+        var longitude={{ result.longitude }}
+        var myLatlng = new google.maps.LatLng(latitude, longitude);
+        function initialize() {
+            var imagePath = 'http://m.schuepfen.ch/icons/helveticons/black/60/Pin-location.png';
+            var mapOptions = {
+              zoom: 11,
+              center: myLatlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+
+            //Callout Content
+            var contentString = 'Some address here..';
+            //Set window width + content
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString,
+              maxWidth: 500
+            });
+
+            function handleEvent(event) {
+              latitude=event.latLng.lat();
+              longitude=event.latLng.lng();
+            }
+            //Add Marker
+            var marker = new google.maps.Marker({
+              position: myLatlng,
+              map: map,
+              icon: imagePath,
+              title: 'image title',
+              draggable: true
+            });
+
+            // marker.addListener('drag', handleEvent);
+            marker.addListener('dragend', handleEvent);
+
+            google.maps.event.addListener(marker, 'click', function (event) {
+              infowindow.open(map, marker);
+            });
+
+            // google.maps.event.addListener(map, 'click', function(event) {
+            //   alert( 'Lat: ' + event.latLng.lat() + ' and Longitude is: ' + event.latLng.lng() );
+            // });
+
+            //Resize Function
+            google.maps.event.addDomListener(window, "resize", function () {
+              var center = map.getCenter();
+              google.maps.event.trigger(map, "resize");
+              map.setCenter(center);
+            });
+      }
+    $(document).ready(function () {
+
+      //Google Maps JS
+      //Set Map
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+    });
+  </script>

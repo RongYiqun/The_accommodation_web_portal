@@ -1,0 +1,25 @@
+{% include "base_afterLogin.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css?family=Spinnaker" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker.min.css' %}" />
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<body style="background-image: url({% static 'pink.png' %});">
+
+
+
+<div style="background: rgba(189,244,39,0.3);width:1400px;height:440px;border-radius:20px;box-shadow: 5px 5px 5px #888888;position: relative;top:30px">
+
+<h1 style="font-family: 'Spinnaker', sans-serif;position:relative;left:500px;top:30px"> Booking succeed! </h1>
+
+<a href="/bookinghistory/" style="font-family: 'Spinnaker', sans-serif;font-size:150%;
+position:relative;left:730px;top:100px"> View my bookings </a>
+
+<a href="/singleProperty/{{listing_id}}" style="font-family: 'Spinnaker', sans-serif;font-size:150%;
+position:relative;left:200px;top:100px"> Review this accommodation </a>
+
+</div>
+
+{% endblock %}

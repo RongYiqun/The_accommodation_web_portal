@@ -1,0 +1,171 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Fonts -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700" rel='stylesheet' type='text/css'>
+
+  <!-- Styles -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #474747;
+    }
+
+    h1 {
+      font-size: 45px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+      margin-bottom: 40px;
+      color: #000;
+      text-shadow: 0 2px 3px #555555;
+      font-family: Tahoma;
+    }
+
+    .container {
+      width: 100%;
+      margin: 0 auto;
+      margin-top: 50px;
+    }
+
+    #map_container {
+      position: relative;
+    }
+
+    #map {
+      height: 0;
+      overflow: hidden;
+      padding-bottom: 22.25%;
+      padding-top: 30px;
+      position: relative;
+    }
+  </style>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1Gtog4Cv8OUO6FuheLR_94UkhekmPZuI&callback=initMap"
+  type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script>
+        var latitude={{ defautlatitude }}
+        var longitude={{ defautlongitude }}
+        var myLatlng = new google.maps.LatLng(latitude, longitude);
+        function initialize() {
+            var imagePath = 'http://m.schuepfen.ch/icons/helveticons/black/60/Pin-location.png';
+            var mapOptions = {
+              zoom: 11,
+              center: myLatlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+
+            //Callout Content
+            var contentString = 'Some address here..';
+            //Set window width + content
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString,
+              maxWidth: 500
+            });
+
+            function handleEvent(event) {
+              latitude=event.latLng.lat();
+              longitude=event.latLng.lng();
+            }
+            //Add Marker
+            var marker = new google.maps.Marker({
+              position: myLatlng,
+              map: map,
+              icon: imagePath,
+              title: 'image title',
+              draggable: true
+            });
+
+            // marker.addListener('drag', handleEvent);
+            marker.addListener('dragend', handleEvent);
+
+            google.maps.event.addListener(marker, 'click', function (event) {
+              infowindow.open(map, marker);
+            });
+
+            // google.maps.event.addListener(map, 'click', function(event) {
+            //   alert( 'Lat: ' + event.latLng.lat() + ' and Longitude is: ' + event.latLng.lng() );
+            // });
+
+            //Resize Function
+            google.maps.event.addDomListener(window, "resize", function () {
+              var center = map.getCenter();
+              google.maps.event.trigger(map, "resize");
+              map.setCenter(center);
+            });
+      }
+    $(document).ready(function () {
+
+      //Google Maps JS
+      //Set Map
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+    });
+  </script>
+</head>
+{% load static %}
+<body style="background-image: url({% static 'blue.png' %});">
+  <p class="container">
+    <div id="map_container"></div>
+    <h3>Please input location:</h3>
+
+    <div class="input-group">
+        <input type="text" id="location" class="form-control width30" >
+        <span class="input-group-btn">
+            <button onclick="getLocation()" class="btn btn-default">Show in map</button>
+        </span>
+    </div>
+    <div id="map"></div>
+    <form id="formout" action="{% url 'lodgingLocator' %}" method="post">
+        <input type="hidden"  id="lt1" name="latitude">
+        <input type="hidden"  id="lt2" name="longitude">
+    </form>
+    <br>
+    <br>
+    <div style="text-align: center;">
+        <button onclick="sendLocation()" class="btn btn-default">Confirm </button>
+    </div>
+  </div>
+<script type="text/javascript">
+  var input="";
+  function getLocation(event){
+    input = document.getElementById("location").value;
+    $.post("{% url 'checkLocation' %}",
+    {
+      location:input
+    },
+    function(data,status){
+      console.log(data);
+      if(data["status"]){
+          latitude=data["latitude"];
+          longitude=data["longitude"];
+          myLatlng = new google.maps.LatLng(latitude, longitude);
+          initialize();
+      }
+    })
+  }
+  
+  function sendLocation() {
+{#  $.post("{% url 'lodgingLocator' %}",#}
+{#    {#}
+{#      latitude:latitude,#}
+{#      longitude:longitude,#}
+{#    })#}
+    document.getElementById("lt1").value = latitude;
+    document.getElementById("lt2").value = longitude;
+    document.getElementById("formout").submit();
+  }
+</script>
+</body>
+{% else %}
+<h>please login before further operations</h>
+{% endif%}

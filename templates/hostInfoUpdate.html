@@ -1,0 +1,18 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% load static %}
+<body style="background-image: url({% static 'yellow.png' %});">
+    {% block content %}
+        <div class="container">
+            {% load crispy_forms_tags %}
+            <img src="{% static photo %}" height="300" width="300" >
+            {% crispy SingleFileFieldForm %}
+            <br>
+            <br>
+            {% crispy HostInfoUpdateForm %}
+        </div> <!-- /container -->
+    {% endblock %}
+</body>
+{% else %}
+<h>please login before further operations</h>
+{% endif%}

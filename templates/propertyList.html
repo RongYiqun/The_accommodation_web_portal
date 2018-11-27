@@ -1,0 +1,76 @@
+{% if user is not None and user.is_authenticated %}
+{% include "base_afterLogin.html" %}
+{% else %}
+{% include "base.html" %}
+{% endif%}
+
+{% load static %}
+{% block content %}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Poppins:400,600" rel="stylesheet">
+    <link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
+    <link href="{% static 'css/slick.css'%}" rel="stylesheet">
+    <link href="{% static 'css/slicknav.css' %}" rel="stylesheet">
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+{#    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">#}
+    <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+    <body class="listing-template">
+    <div id="site-banner" class="text-center clearfix" style="background-image: url({% static 'img/banner.jpg' %})">
+        <div><br><br></div>
+        <div class="container">
+            <h1 class="title wow slideInLeft">Properties Grid</h1>
+        </div>
+        <div><br><br></div>
+    </div>
+    <section id="property-listing">
+        <header class="section-header text-center">
+            <div class="container">
+                <h2 class="pull-left">Showing {{ number }} items</h2>
+{#                <div class="pull-right">#}
+{#                    <div class="property-sorting pull-left">#}
+{#                        <label for="property-sort-dropdown"> Sort by:   </label>#}
+{#                        <select name="property-sort-dropdown" id="property-sort-dropdown">#}
+{#                            <option value="">Default Order</option>#}
+{#                            <option value="by_date">By date</option>#}
+{#                            <option value="by_price">By price</option>#}
+{#                        </select>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+        </header>
+        <div class="container section-layout">
+            <div class="row">
+                {% for x in results %}
+                <div class="col-lg-4 col-sm-6 layout-item-wrap"><article class="property layout-item clearfix">
+                    <figure class="feature-image">
+                        <a class="clearfix zoom" href="{% url 'singleProperty' x.id%}"><img data-action="zoom" src="{{ x.url }}" alt="Property Image" style="height: 250px"></a>
+                    </figure>
+                    <div class="property-contents clearfix">
+                        <header class="property-header clearfix">
+                            <div class="pull-left">
+                                <h4 class="entry-title"><a href="{% url 'singleProperty' x.id %}">{{ x.name }}</a></h4>
+                            </div>
+                            <button class="btn btn-default btn-price pull-right btn-3d" data-hover=""><strong>${{ x.price }}</strong></button>
+                        </header>
+                    </div>
+                </article>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    </body>
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static '/js/jquery.migrate.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.min.js'%}"></script>
+    <script src="{% static 'js/slick.min.js'%}"></script>
+    <script src="{% static 'js/jquery-ui.min.js'%}"></script>
+    <script src="{% static 'js/tweetie.js'%}"></script>
+    <script src="{% static 'js/jquery.form.min.js'%}"></script>
+    <script src="{% static 'js/jquery.validate.min.js'%}"></script>
+    <script src="{% static 'js/modernizr.custom.js'%}"></script>
+    <script src="{% static 'js/wow.min.js'%}"></script>
+    <script src="{% static 'js/zoom.js'%}"></script>
+    <script src="{% static 'js/mixitup.min.js'%}"></script>
+{% endblock %}
