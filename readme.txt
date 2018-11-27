@@ -1,4 +1,4 @@
-We have launched our website and database in online servers, you can access it via www.lehuoingpage.com.
+We have launched our website and database in online servers, you can access it via http://psychecraft.com.
 
 You can also run and configure it on the localhost, in that case you need to configure your environment and dependencies.
 You can use the following commands to install all modules:
